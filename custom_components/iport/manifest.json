@@ -1,0 +1,13 @@
+{
+    "domain": "iport",
+    "name": "Light Symphony iPort",
+    "codeowners": ["@peteS-UK"],
+    "config_flow": true,
+    "dependencies": [],
+    "documentation": "https://github.com/peteS-UK/iport/blob/main/README.md",
+    "iot_class": "local_polling",
+    "issue_tracker": "https://github.com/peteS-UK/iport/issues",
+    "requirements": ["asyncio_datagram"],
+    "version": "1.0"
+  }
+  

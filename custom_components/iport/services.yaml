@@ -1,0 +1,40 @@
+send_command:
+  name: iPort Service
+  description: Send UDP messages to LightSymphony iPort.  The iPort Command will accept area_on x, area_off x (x being the area number), all_on, all_off, inten_x_d (set intensity of area x to d - 1-10), start_show, stop_show and colour_x_c (set colour of area x to c - 1-16).
+  target:
+    entity:
+      integration: iport
+      domain: switch
+  fields:
+    Command:
+      name: iPort Command
+      Description: The command to send to the iPort.
+      required: true
+      selector: 
+        select:
+          multiple: false
+          options:
+            - Area On
+            - Area Off
+            - All On
+            - All Off
+            - Intensity
+            - Colour
+            - Start Show
+            - Stop Show
+    Area:
+      name: Area Number
+      description: "The area to which to apply the command, if required"
+      required: false
+      example: 0
+      selector:
+        text:
+    Value:
+      name: Command Value
+      description: "The value for the command, for Intensity or Colour"
+      required: false
+      example: 0
+      selector:
+        text:
+
+  
