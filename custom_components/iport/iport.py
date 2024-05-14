@@ -61,8 +61,12 @@ class IPORT(object):
 		match command:
 			case "Area On":
 				_command = "area_on " + str(port_number)
+				_LOGGER.debug("Area On for %d", port_number)
+				self.state = True
 			case "Area Off":
 				_command = "area_off " + str(port_number)
+				_LOGGER.debug("Area Off for %d", port_number)
+				self.state = False
 			case "All On":
 				_command = "all_on"
 			case "All Off":

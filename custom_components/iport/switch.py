@@ -168,5 +168,6 @@ class IPORTDevice(SwitchEntity):
 		#await self._device.async_update(self._port_number)
 
 	async def send_command(self, Command, Value = None):
-
+		_LOGGER.debug("Send Command %s for port %d", Command, self._port_number)
 		await self._device.async_send_command(Command, self._port_number, Value)
+		self.async_schedule_update_ha_state(force_refresh=False)
