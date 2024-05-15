@@ -24,6 +24,31 @@ class IPORT(object):
 		self._port_name = []
 		self.state = False
 
+	@classmethod
+	def discover(cls):
+
+		#No IP specified, so try discovery
+		_LOGGER.debug('Discovery Started')
+		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+		sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+		try:
+			sock.settimeout(2.0)
+			sock.sendto(b"\x00\x01\x00\xF6", ('255.255.255.255', 30718))
+			data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+		except (socket.error, socket.timeout):
+			_LOGGER.debug ("Discovery Failure.")
+			sock.close()
+			return None
+		else:
+			_LOGGER.debug("Broadcast Response: %s", data)
+			iPortIp = str(addr[0])
+			_LOGGER.debug ("Discovered iPort IP: %s",iPortIp)
+		finally:
+			sock.close()
+
+		return iPortIp
+
 	async def async_udp_connect(self):
 		try:
 			self._udp_stream = await asyncio_datagram.connect((self._ip, self._port))
@@ -87,7 +112,7 @@ class IPORT(object):
 		except:
 			try:
 				_LOGGER.debug("Connection lost.  Attepting to reconnect")
-				self.async_udp_connect()
+				await self.async_udp_connect()
 				await self._udp_stream.send(command)
 
 			except IOError as e:

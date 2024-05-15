@@ -20,8 +20,9 @@ from homeassistant.helpers.entity_registry import (
 _LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = vol.Schema(
-    {vol.Required(CONF_HOST): cv.string, 
-    vol.Optional(CONF_NAME): cv.string,
+    {vol.Optional(CONF_HOST): cv.string, 
+    vol.Required(CONF_NAME): cv.string,
+    vol.Required("area_count", default="8"): cv.string,
     vol.Optional("area_1", default="Area 1"): cv.string,
     vol.Optional("area_2", default="Area 2"): cv.string,
     vol.Optional("area_3", default="Area 3"): cv.string,
@@ -29,7 +30,14 @@ CONFIG_SCHEMA = vol.Schema(
     vol.Optional("area_5", default="Area 5"): cv.string,
     vol.Optional("area_6", default="Area 6"): cv.string,
     vol.Optional("area_7", default="Area 7"): cv.string,
-    vol.Optional("area_8", default="Area 8"): cv.string
+    vol.Optional("area_8", default="Area 8"): cv.string,
+    vol.Optional("area_9", default="Area 9"): cv.string,
+    vol.Optional("area_10", default="Area 10"): cv.string,
+    vol.Optional("area_11", default="Area 11"): cv.string,
+    vol.Optional("area_12", default="Area 12"): cv.string,
+    vol.Optional("area_13", default="Area 13"): cv.string,
+    vol.Optional("area_14", default="Area 14"): cv.string,
+    vol.Optional("area_15", default="Area 15"): cv.string
     }
 )
 
@@ -40,13 +48,13 @@ class SelectError(exceptions.HomeAssistantError):
 
 async def validate_auth(hass: core.HomeAssistant, data: dict) -> None:
 
-    if "host" not in data.keys():
-        data["host"] = ""
+#    if "host" not in data.keys():
+#        data["host"] = ""
     if "name" not in data.keys():
         data["name"] = ""
 
 
-    if ( (len(data["host"]) <3 or len(data["name"])<1)):
+    if ( (len(data["name"])<1)):
         # Manual entry requires host and name
         raise ValueError
 

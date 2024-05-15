@@ -2,13 +2,14 @@
   "title": "Light Symphony iPort",
     "config": {
       "error": {
-        "data": "You must enter the IP and Name of the iPort"
+        "data": "You must enter the Name of the iPort and the number of areas in use"
       },
       "step": {
         "user": {
           "data": {
             "host": "IP Address of the iPort",
             "name": "Name for the iPort device",
+            "area_count": "Number of areas in use",
             "area_1": "Name for Area 1",
             "area_2": "Name for Area 2",
             "area_3": "Name for Area 3",
@@ -16,7 +17,15 @@
             "area_5": "Name for Area 5",
             "area_6": "Name for Area 6",
             "area_7": "Name for Area 7",
-            "area_8": "Name for Area 8"
+            "area_8": "Name for Area 8",
+            "area_9": "Name for Area 9",
+            "area_10": "Name for Area 10",
+            "area_11": "Name for Area 11",
+            "area_12": "Name for Area 12",
+            "area_13": "Name for Area 13",
+            "area_14": "Name for Area 14",
+            "area_15": "Name for Area 15"
+            
           },
           "description": "Enter the details for your iPort.",
           "title": "Light Symphony iPort"

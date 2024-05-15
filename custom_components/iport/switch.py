@@ -35,12 +35,13 @@ from .const import (
 	DOMAIN,
 	CONF_AREA,
 	SERVICE_SEND_COMMAND,
+	CONF_AREA_COUNT,
 	DEFAULT_NAME
 )
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
-    {vol.Required(CONF_HOST): cv.string, 
-    vol.Optional(CONF_NAME): cv.string,
+    {vol.Optional(CONF_HOST): cv.string, 
+    vol.Required(CONF_NAME): cv.string,
     vol.Optional(CONF_AREA+"1", default="Area 1"): cv.string,
     vol.Optional(CONF_AREA+"2", default="Area 2"): cv.string,
     vol.Optional(CONF_AREA+"3", default="Area 3"): cv.string,
@@ -48,7 +49,14 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     vol.Optional(CONF_AREA+"5", default="Area 5"): cv.string,
     vol.Optional(CONF_AREA+"6", default="Area 6"): cv.string,
     vol.Optional(CONF_AREA+"7", default="Area 7"): cv.string,
-    vol.Optional(CONF_AREA+"8", default="Area 8"): cv.string
+    vol.Optional(CONF_AREA+"8", default="Area 8"): cv.string,
+    vol.Optional(CONF_AREA+"9", default="Area 9"): cv.string,
+    vol.Optional(CONF_AREA+"10", default="Area 10"): cv.string,
+    vol.Optional(CONF_AREA+"11", default="Area 11"): cv.string,
+    vol.Optional(CONF_AREA+"12", default="Area 12"): cv.string,
+    vol.Optional(CONF_AREA+"13", default="Area 13"): cv.string,
+    vol.Optional(CONF_AREA+"14", default="Area 14"): cv.string,
+    vol.Optional(CONF_AREA+"15", default="Area 15"): cv.string
     }
 )
 
@@ -70,9 +78,10 @@ async def async_setup_entry(
 
 	iport = config["iport"]
 	
+	area_count = int(config[CONF_AREA_COUNT])
 	areas = []
 
-	for port in range(1,9):
+	for port in range(1,area_count+1):
 		port_name = "area_"+str(port)
 		areas.append(IPORTDevice(iport, iport._port_name[port-1], port, hass))
 

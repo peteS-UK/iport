@@ -11,6 +11,7 @@ from .iport import IPORT
 from .const import (
 	DOMAIN,
 	CONF_AREA,
+	CONF_AREA_COUNT,
 	DEFAULT_NAME
 )
 
@@ -26,11 +27,24 @@ async def async_setup_entry(
 	hass.data.setdefault(DOMAIN, {})
 	hass_data = dict(entry.data)
 
-	iport = IPORT(hass_data[CONF_HOST],hass_data[CONF_NAME])
+
+	iPortIP = hass_data.get(CONF_HOST,None)
+
+	if iPortIP is None:
+		_LOGGER.debug("No IP, so try discovery")
+		iPortIP = await hass.async_add_executor_job(IPORT.discover)
+
+	if iPortIP is None:
+		_LOGGER.critical("No iPort IP specified, and discovery failed")
+		return False
+	
+	_LOGGER.debug("iPortIP: %s", iPortIP)
+	
+	iport = IPORT(iPortIP,hass_data[CONF_NAME])
 
 	await iport.async_udp_connect()
 
-	for i in range(8):
+	for i in range(int(hass_data[CONF_AREA_COUNT])):
 		iport._port_name.append(hass_data[CONF_AREA + str(i+1)])
 
 	hass_data["iport"] = iport
