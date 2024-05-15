@@ -27,7 +27,7 @@
             "area_15": "Name for Area 15"
             
           },
-          "description": "Enter the details for your iPort.",
+          "description": "Enter the details for your iPort.  You must enter a name and the number of areas you're using.  If you leave the IP blank, the integration will try and discover the iPort on the local subnet.",
           "title": "Light Symphony iPort"
         }
       }
