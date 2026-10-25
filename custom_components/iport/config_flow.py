@@ -1,38 +1,34 @@
 import logging
 
-from typing import Dict
-
-import voluptuous as vol
-
-from .const import DOMAIN
-
+import homeassistant.helpers.config_validation as cv
+import probatio
 from homeassistant import config_entries, core, exceptions
 from homeassistant.const import CONF_HOST, CONF_NAME
 
-import homeassistant.helpers.config_validation as cv
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-CONFIG_SCHEMA = vol.Schema(
+CONFIG_SCHEMA = probatio.Schema(
     {
-        vol.Optional(CONF_HOST): cv.string,
-        vol.Required(CONF_NAME): cv.string,
-        vol.Required("area_count", default="8"): cv.string,
-        vol.Optional("area_1", default="Area 1"): cv.string,
-        vol.Optional("area_2", default="Area 2"): cv.string,
-        vol.Optional("area_3", default="Area 3"): cv.string,
-        vol.Optional("area_4", default="Area 4"): cv.string,
-        vol.Optional("area_5", default="Area 5"): cv.string,
-        vol.Optional("area_6", default="Area 6"): cv.string,
-        vol.Optional("area_7", default="Area 7"): cv.string,
-        vol.Optional("area_8", default="Area 8"): cv.string,
-        vol.Optional("area_9", default="Area 9"): cv.string,
-        vol.Optional("area_10", default="Area 10"): cv.string,
-        vol.Optional("area_11", default="Area 11"): cv.string,
-        vol.Optional("area_12", default="Area 12"): cv.string,
-        vol.Optional("area_13", default="Area 13"): cv.string,
-        vol.Optional("area_14", default="Area 14"): cv.string,
-        vol.Optional("area_15", default="Area 15"): cv.string,
+        probatio.Optional(CONF_HOST): cv.string,
+        probatio.Required(CONF_NAME): cv.string,
+        probatio.Required("area_count", default="8"): cv.string,
+        probatio.Optional("area_1", default="Area 1"): cv.string,
+        probatio.Optional("area_2", default="Area 2"): cv.string,
+        probatio.Optional("area_3", default="Area 3"): cv.string,
+        probatio.Optional("area_4", default="Area 4"): cv.string,
+        probatio.Optional("area_5", default="Area 5"): cv.string,
+        probatio.Optional("area_6", default="Area 6"): cv.string,
+        probatio.Optional("area_7", default="Area 7"): cv.string,
+        probatio.Optional("area_8", default="Area 8"): cv.string,
+        probatio.Optional("area_9", default="Area 9"): cv.string,
+        probatio.Optional("area_10", default="Area 10"): cv.string,
+        probatio.Optional("area_11", default="Area 11"): cv.string,
+        probatio.Optional("area_12", default="Area 12"): cv.string,
+        probatio.Optional("area_13", default="Area 13"): cv.string,
+        probatio.Optional("area_14", default="Area 14"): cv.string,
+        probatio.Optional("area_15", default="Area 15"): cv.string,
     }
 )
 
@@ -46,7 +42,7 @@ class SelectError(exceptions.HomeAssistantError):
 async def validate_auth(hass: core.HomeAssistant, data: dict) -> None:
     #    if "host" not in data.keys():
     #        data["host"] = ""
-    if "name" not in data.keys():
+    if "name" not in data:
         data["name"] = ""
 
     if len(data["name"]) < 1:
@@ -54,12 +50,13 @@ async def validate_auth(hass: core.HomeAssistant, data: dict) -> None:
         raise ValueError
 
 
-class IPORTConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+@config_entries.HANDLERS.register(DOMAIN)
+class IPORTConfigFlow(config_entries.ConfigFlow):
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
 
     async def async_step_user(self, user_input=None):
         """Invoked when a user initiates a flow via the user interface."""
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
         if user_input is not None:
             try:
                 await validate_auth(self.hass, user_input)

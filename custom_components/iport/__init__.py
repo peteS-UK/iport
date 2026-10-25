@@ -1,18 +1,16 @@
-"""The emotiva component."""
+"""The Light Symphony iport component."""
 
 import logging
 
 from homeassistant import config_entries, core
-from homeassistant.const import Platform
-from homeassistant.const import CONF_HOST, CONF_NAME
-
-from .iport import IPORT
+from homeassistant.const import CONF_HOST, CONF_NAME, Platform
 
 from .const import (
-    DOMAIN,
     CONF_AREA,
     CONF_AREA_COUNT,
+    DOMAIN,
 )
+from .iport import IPORT
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-import voluptuous as vol
+import probatio
 from homeassistant import config_entries, core
 from homeassistant.components.switch import PLATFORM_SCHEMA, SwitchEntity
 from homeassistant.const import CONF_HOST, CONF_NAME
@@ -23,25 +23,27 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+PARALLEL_UPDATES = 1
+
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
-        vol.Optional(CONF_HOST): cv.string,
-        vol.Required(CONF_NAME): cv.string,
-        vol.Optional(CONF_AREA + "1", default="Area 1"): cv.string,
-        vol.Optional(CONF_AREA + "2", default="Area 2"): cv.string,
-        vol.Optional(CONF_AREA + "3", default="Area 3"): cv.string,
-        vol.Optional(CONF_AREA + "4", default="Area 4"): cv.string,
-        vol.Optional(CONF_AREA + "5", default="Area 5"): cv.string,
-        vol.Optional(CONF_AREA + "6", default="Area 6"): cv.string,
-        vol.Optional(CONF_AREA + "7", default="Area 7"): cv.string,
-        vol.Optional(CONF_AREA + "8", default="Area 8"): cv.string,
-        vol.Optional(CONF_AREA + "9", default="Area 9"): cv.string,
-        vol.Optional(CONF_AREA + "10", default="Area 10"): cv.string,
-        vol.Optional(CONF_AREA + "11", default="Area 11"): cv.string,
-        vol.Optional(CONF_AREA + "12", default="Area 12"): cv.string,
-        vol.Optional(CONF_AREA + "13", default="Area 13"): cv.string,
-        vol.Optional(CONF_AREA + "14", default="Area 14"): cv.string,
-        vol.Optional(CONF_AREA + "15", default="Area 15"): cv.string,
+        probatio.Optional(CONF_HOST): cv.string,
+        probatio.Required(CONF_NAME): cv.string,
+        probatio.Optional(CONF_AREA + "1", default="Area 1"): cv.string,
+        probatio.Optional(CONF_AREA + "2", default="Area 2"): cv.string,
+        probatio.Optional(CONF_AREA + "3", default="Area 3"): cv.string,
+        probatio.Optional(CONF_AREA + "4", default="Area 4"): cv.string,
+        probatio.Optional(CONF_AREA + "5", default="Area 5"): cv.string,
+        probatio.Optional(CONF_AREA + "6", default="Area 6"): cv.string,
+        probatio.Optional(CONF_AREA + "7", default="Area 7"): cv.string,
+        probatio.Optional(CONF_AREA + "8", default="Area 8"): cv.string,
+        probatio.Optional(CONF_AREA + "9", default="Area 9"): cv.string,
+        probatio.Optional(CONF_AREA + "10", default="Area 10"): cv.string,
+        probatio.Optional(CONF_AREA + "11", default="Area 11"): cv.string,
+        probatio.Optional(CONF_AREA + "12", default="Area 12"): cv.string,
+        probatio.Optional(CONF_AREA + "13", default="Area 13"): cv.string,
+        probatio.Optional(CONF_AREA + "14", default="Area 14"): cv.string,
+        probatio.Optional(CONF_AREA + "15", default="Area 15"): cv.string,
     }
 )
 
@@ -68,8 +70,8 @@ async def async_setup_entry(
     platform.async_register_entity_service(
         SERVICE_SEND_COMMAND,
         {
-            vol.Required("Command"): cv.string,
-            vol.Optional("Value"): cv.string,
+            probatio.Required("Command"): cv.string,
+            probatio.Optional("Value"): cv.string,
         },
         IPORTDevice.send_command.__name__,
     )
@@ -137,7 +139,7 @@ class IPORTDevice(SwitchEntity):
         self._device.state = False
         self.async_schedule_update_ha_state(force_refresh=False)
 
-    async def send_command(self, Command, Value=None):
-        _LOGGER.debug("Send Command %s for port %d", Command, self._port_number)
-        await self._device.async_send_command(Command, self._port_number, Value)
+    async def send_command(self, command, value=None):
+        _LOGGER.debug("Send Command %s for port %d", command, self._port_number)
+        await self._device.async_send_command(command, self._port_number, value)
         self.async_schedule_update_ha_state(force_refresh=False)

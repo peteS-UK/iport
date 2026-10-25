@@ -1,16 +1,13 @@
 import logging
-
 import socket
+import sys
 
 import asyncio_datagram
-
-
-import sys
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class IPORT(object):
+class IPORT:
     def __init__(self, ip, name):
         self._ip = ip
         self._name = name
@@ -46,24 +43,24 @@ class IPORT(object):
         try:
             self._udp_stream = await asyncio_datagram.connect((self._ip, self._port))
 
-        except IOError as e:
+        except OSError as e:
             _LOGGER.critical(
                 "Cannot connect command socket %d: %s", e.errno, e.strerror
             )
         except Exception:
-            _LOGGER.critical(
+            _LOGGER.exception(
                 "Unknown error on command socket connection %s", sys.exc_info()[0]
             )
 
     async def async_udp_disconnect(self):
         try:
             self._udp_stream.close()
-        except IOError as e:
+        except OSError as e:
             _LOGGER.critical(
                 "Cannot disconnect from command socket %d: %s", e.errno, e.strerror
             )
         except Exception:
-            _LOGGER.critical(
+            _LOGGER.exception(
                 "Unknown error on command socket disconnection %s", sys.exc_info()[0]
             )
 
@@ -83,41 +80,43 @@ class IPORT(object):
     async def async_send_command(self, command, port_number, value=None):
         match command:
             case "Area On":
-                _command = "area_on " + str(port_number)
+                _command = f"area_on {port_number}\r\n"
                 _LOGGER.debug("Area On for %d", port_number)
                 self.state = True
             case "Area Off":
-                _command = "area_off " + str(port_number)
+                _command = f"area_off {port_number}\r\n"
                 _LOGGER.debug("Area Off for %d", port_number)
                 self.state = False
             case "All On":
-                _command = "all_on"
+                _command = "all_on\r\n"
             case "All Off":
-                _command = "all_off"
+                _command = "all_off\r\n"
             case "Intensity":
-                _command = "inten_" + str(port_number) + "_" + value
+                _command = f"inten_{port_number}_{value}\r\n"
             case "Colour":
-                _command = "colour_" + str(port_number) + "_" + value
+                _command = f"colour_{port_number}_{value}\r\n"
             case "Start Show":
-                _command = "start_show"
+                _command = "start_show\r\n"
             case "All Off":
-                _command = "stop_show"
+                _command = "stop_show\r\n"
+            case _:
+                _command = None
 
-        _command = _command + "\r\n"
-
-        try:
-            await self._udp_stream.send(_command.encode())
-        except Exception:
+        if _command:
             try:
-                _LOGGER.error("Connection lost.  Attepting to reconnect")
-                await self.async_udp_connect()
-                await self._udp_stream.send(command)
-
-            except IOError as e:
-                _LOGGER.critical(
-                    "Cannot reconnect to command socket %d: %s", e.errno, e.strerror
-                )
+                await self._udp_stream.send(_command.encode())
             except Exception:
-                _LOGGER.critical(
-                    "Unknown error on command socket reconnection %s", sys.exc_info()[0]
-                )
+                try:
+                    _LOGGER.error("Connection lost.  Attepting to reconnect")
+                    await self.async_udp_connect()
+                    await self._udp_stream.send(command)
+
+                except OSError as e:
+                    _LOGGER.critical(
+                        "Cannot reconnect to command socket %d: %s", e.errno, e.strerror
+                    )
+                except Exception:
+                    _LOGGER.exception(
+                        "Unknown error on command socket reconnection %s",
+                        sys.exc_info()[0],
+                    )
