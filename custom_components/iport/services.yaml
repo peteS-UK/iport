@@ -6,9 +6,9 @@ send_command:
       integration: iport
       domain: switch
   fields:
-    Command:
+    command:
       name: iPort Command
-      Description: 'The command to send to the iPort'
+      description: 'The command to send to the iPort'
       required: true
       selector:
         select:
@@ -22,14 +22,7 @@ send_command:
             - Colour
             - Start Show
             - Stop Show
-    Area:
-      name: Area Number
-      description: 'The area to which to apply the command, if required'
-      required: false
-      example: 0
-      selector:
-        text:
-    Value:
+    value:
       name: Command Value
       description: 'The value for the command, for Intensity or Colour'
       required: false
