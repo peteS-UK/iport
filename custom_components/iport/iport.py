@@ -12,7 +12,6 @@ class IPORT:
         self._ip = ip
         self._name = name
         self._port = 10001
-        self._port_name = []
         self.state = False
 
     @classmethod
@@ -44,13 +43,13 @@ class IPORT:
             self._udp_stream = await asyncio_datagram.connect((self._ip, self._port))
 
         except OSError as e:
-            _LOGGER.critical(
-                "Cannot connect command socket %d: %s", e.errno, e.strerror
-            )
+            _LOGGER.error("Cannot connect command socket %d: %s", e.errno, e.strerror)
+            raise
         except Exception:
             _LOGGER.exception(
                 "Unknown error on command socket connection %s", sys.exc_info()[0]
             )
+            raise
 
     async def async_udp_disconnect(self):
         try:
@@ -105,18 +104,13 @@ class IPORT:
         if _command:
             try:
                 await self._udp_stream.send(_command.encode())
-            except Exception:
-                try:
-                    _LOGGER.error("Connection lost.  Attepting to reconnect")
-                    await self.async_udp_connect()
-                    await self._udp_stream.send(command)
 
-                except OSError as e:
-                    _LOGGER.critical(
-                        "Cannot reconnect to command socket %d: %s", e.errno, e.strerror
-                    )
-                except Exception:
-                    _LOGGER.exception(
-                        "Unknown error on command socket reconnection %s",
-                        sys.exc_info()[0],
-                    )
+            except OSError as e:
+                _LOGGER.critical(
+                    "Cannot send on command socket %d: %s", e.errno, e.strerror
+                )
+            except Exception:
+                _LOGGER.exception(
+                    "Unknown error on command socket write %s",
+                    sys.exc_info()[0],
+                )

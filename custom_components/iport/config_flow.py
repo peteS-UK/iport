@@ -1,4 +1,4 @@
-import logging
+"""Config flow for iPort integration."""
 
 import homeassistant.helpers.config_validation as cv
 import probatio
@@ -6,8 +6,6 @@ from homeassistant import config_entries, core, exceptions
 from homeassistant.const import CONF_HOST, CONF_NAME
 
 from .const import DOMAIN
-
-_LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = probatio.Schema(
     {
@@ -33,6 +31,45 @@ CONFIG_SCHEMA = probatio.Schema(
 )
 
 
+MAX_AREAS = 15
+
+
+def _options_schema(current: dict) -> probatio.Schema:
+    """Build the options schema using the current values as defaults."""
+    schema = {
+        probatio.Required(
+            "area_count", default=str(current.get("area_count", "8"))
+        ): cv.string
+    }
+    for i in range(1, MAX_AREAS + 1):
+        key = f"area_{i}"
+        schema[probatio.Optional(key, default=current.get(key, f"Area {i}"))] = (
+            cv.string
+        )
+    return probatio.Schema(schema)
+
+
+class IPORTOptionsFlow(config_entries.OptionsFlow):
+    """Options flow to change the area count and area names."""
+
+    async def async_step_init(self, user_input=None):
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            try:
+                count = int(user_input["area_count"])
+                if not 1 <= count <= MAX_AREAS:
+                    raise ValueError
+            except ValueError:
+                errors["base"] = "area_count"
+            if not errors:
+                return self.async_create_entry(title="", data=user_input)
+
+        current = {**self.config_entry.data, **self.config_entry.options}
+        return self.async_show_form(
+            step_id="init", data_schema=_options_schema(current), errors=errors
+        )
+
+
 class SelectError(exceptions.HomeAssistantError):
     """Error"""
 
@@ -40,8 +77,6 @@ class SelectError(exceptions.HomeAssistantError):
 
 
 async def validate_auth(hass: core.HomeAssistant, data: dict) -> None:
-    #    if "host" not in data.keys():
-    #        data["host"] = ""
     if "name" not in data:
         data["name"] = ""
 
@@ -52,7 +87,10 @@ async def validate_auth(hass: core.HomeAssistant, data: dict) -> None:
 
 @config_entries.HANDLERS.register(DOMAIN)
 class IPORTConfigFlow(config_entries.ConfigFlow):
-    CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
+    @staticmethod
+    @core.callback
+    def async_get_options_flow(config_entry):
+        return IPORTOptionsFlow()
 
     async def async_step_user(self, user_input=None):
         """Invoked when a user initiates a flow via the user interface."""
@@ -65,6 +103,11 @@ class IPORTConfigFlow(config_entries.ConfigFlow):
             except SelectError:
                 errors["base"] = "select"
             if not errors:
+                # Host if given, otherwise the device name (host is optional)
+                await self.async_set_unique_id(
+                    user_input.get(CONF_HOST) or user_input[CONF_NAME]
+                )
+                self._abort_if_unique_id_configured()
                 # Input is valid, set data.
                 self.data = user_input
                 return self.async_create_entry(
