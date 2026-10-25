@@ -1,66 +1,61 @@
-"""The emotiva component."""
+"""The Light Symphony iport component."""
 
 import logging
 
 from homeassistant import config_entries, core
-from homeassistant.const import Platform
-from homeassistant.const import CONF_HOST, CONF_NAME
+from homeassistant.const import CONF_HOST, CONF_NAME, Platform
+from homeassistant.exceptions import ConfigEntryNotReady
 
 from .iport import IPORT
-
-from .const import (
-    DOMAIN,
-    CONF_AREA,
-    CONF_AREA_COUNT,
-)
 
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = [Platform.SWITCH]
 
+type IPortConfigEntry = config_entries.ConfigEntry[IPORT]
 
-async def async_setup_entry(
-    hass: core.HomeAssistant, entry: config_entries.ConfigEntry
-) -> bool:
+
+async def async_setup_entry(hass: core.HomeAssistant, entry: IPortConfigEntry) -> bool:
     """Set up platform from a ConfigEntry."""
-    hass.data.setdefault(DOMAIN, {})
-    hass_data = dict(entry.data)
+    hass_data = {**entry.data, **entry.options}
 
     iPortIP = hass_data.get(CONF_HOST, None)
 
-    if iPortIP is None:
+    if not iPortIP:
         _LOGGER.debug("No IP, so try discovery")
         iPortIP = await hass.async_add_executor_job(IPORT.discover)
 
-    if iPortIP is None:
-        _LOGGER.critical("No iPort IP specified, and discovery failed")
-        return False
+    if not iPortIP:
+        raise ConfigEntryNotReady("No iPort IP specified, and discovery failed")
 
     _LOGGER.debug("iPortIP: %s", iPortIP)
 
     iport = IPORT(iPortIP, hass_data[CONF_NAME])
 
-    await iport.async_udp_connect()
+    try:
+        await iport.async_udp_connect()
+    except Exception as err:
+        raise ConfigEntryNotReady(f"Cannot connect to iPort at {iPortIP}") from err
 
-    for i in range(int(hass_data[CONF_AREA_COUNT])):
-        iport._port_name.append(hass_data[CONF_AREA + str(i + 1)])
-
-    hass_data["iport"] = iport
-
-    hass.data[DOMAIN][entry.entry_id] = hass_data
+    entry.runtime_data = iport
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
 
     return True
 
 
-async def async_unload_entry(
+async def _async_update_listener(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry
-) -> bool:
+) -> None:
+    """Reload the entry when options change."""
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
+async def async_unload_entry(hass: core.HomeAssistant, entry: IPortConfigEntry) -> bool:
     """Unload a config entry."""
     if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        # Remove config entry from domain.
-        iport = hass.data[DOMAIN][entry.entry_id]["iport"]
-        await iport.async_udp_disconnect()
+        await entry.runtime_data.async_udp_disconnect()
 
     return unload_ok

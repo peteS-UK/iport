@@ -1,6 +1,9 @@
 {
   "title": "Light Symphony iPort",
     "config": {
+      "abort": {
+        "already_configured": "This iPort is already configured"
+      },
       "error": {
         "data": "You must enter the Name of the iPort and the number of areas in use"
       },
@@ -28,6 +31,35 @@
             
           },
           "description": "Enter the details for your iPort.  You must enter a name and the number of areas you're using.  If you leave the IP blank, the integration will try and discover the iPort on the local subnet.",
+          "title": "Light Symphony iPort"
+        }
+      }
+    },
+    "options": {
+      "error": {
+        "area_count": "Number of areas must be between 1 and 15"
+      },
+      "step": {
+        "init": {
+          "data": {
+            "area_count": "Number of areas in use",
+            "area_1": "Name for Area 1",
+            "area_2": "Name for Area 2",
+            "area_3": "Name for Area 3",
+            "area_4": "Name for Area 4",
+            "area_5": "Name for Area 5",
+            "area_6": "Name for Area 6",
+            "area_7": "Name for Area 7",
+            "area_8": "Name for Area 8",
+            "area_9": "Name for Area 9",
+            "area_10": "Name for Area 10",
+            "area_11": "Name for Area 11",
+            "area_12": "Name for Area 12",
+            "area_13": "Name for Area 13",
+            "area_14": "Name for Area 14",
+            "area_15": "Name for Area 15"
+          },
+          "description": "Change the number of areas in use and the area names.",
           "title": "Light Symphony iPort"
         }
       }
