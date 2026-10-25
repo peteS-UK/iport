@@ -54,11 +54,9 @@ async def async_setup_entry(
 
 async def async_unload_entry(
     hass: core.HomeAssistant, entry: config_entries.ConfigEntry
-) -> bool:
+) -> None:
     """Unload a config entry."""
-    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
-        # Remove config entry from domain.
-        iport = hass.data[DOMAIN][entry.entry_id]["iport"]
-        await iport.async_udp_disconnect()
-
-    return unload_ok
+    await hass.config_entries.async_unload_platforms_or_raise(entry, PLATFORMS)
+    # Remove config entry from domain.
+    iport = hass.data[DOMAIN][entry.entry_id]["iport"]
+    await iport.async_udp_disconnect()
