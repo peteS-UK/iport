@@ -13,6 +13,7 @@ from homeassistant.helpers import (
     entity_platform,
 )
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.restore_state import RestoreEntity
 
 from .const import (
     CONF_AREA,
@@ -77,7 +78,7 @@ async def async_setup_entry(
     )
 
 
-class IPORTDevice(SwitchEntity):
+class IPORTDevice(SwitchEntity, RestoreEntity):
     # Representation of a IPORT
 
     def __init__(self, device, port_name, port_number, hass):
@@ -85,8 +86,18 @@ class IPORTDevice(SwitchEntity):
         self._port_name = port_name
         self._port_number = port_number
         self._hass = hass
-        self._entity_id = "switch.iport_area_" + str(port_number)
-        self._unique_id = "iport_area_" + str(port_number)
+        self._entity_id = f"switch.iport_area_{port_number}"
+        self._unique_id = f"iport_area_{port_number}"
+        self._attr_assumed_state = True
+        self._attr_is_on = False
+
+    async def async_added_to_hass(self):
+        """Restore last state on startup."""
+        await super().async_added_to_hass()
+        last_state = await self.async_get_last_state()
+
+        if last_state:
+            self._attr_is_on = last_state.state == "on"
 
     @property
     def should_poll(self):
@@ -125,21 +136,17 @@ class IPORTDevice(SwitchEntity):
     def entity_id(self, entity_id):
         self._entity_id = entity_id
 
-    @property
-    def is_on(self):
-        return self._device.state
-
     async def async_turn_on(self, **kwargs):
         await self._device.async_turn_on(self._port_number)
-        self._device.state = True
-        self.async_schedule_update_ha_state(force_refresh=False)
+        self._attr_is_on = True
+        self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
         await self._device.async_turn_off(self._port_number)
-        self._device.state = False
-        self.async_schedule_update_ha_state(force_refresh=False)
+        self._attr_is_on = False
+        self.async_write_ha_state()
 
     async def send_command(self, command, value=None):
         _LOGGER.debug("Send Command %s for port %d", command, self._port_number)
         await self._device.async_send_command(command, self._port_number, value)
-        self.async_schedule_update_ha_state(force_refresh=False)
+        self.async_write_ha_state()
