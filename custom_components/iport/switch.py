@@ -48,8 +48,8 @@ async def async_setup_entry(
     platform.async_register_entity_service(
         SERVICE_SEND_COMMAND,
         {
-            probatio.Required("Command"): cv.string,
-            probatio.Optional("Value"): cv.string,
+            probatio.Required("command"): cv.string,
+            probatio.Optional("value"): cv.string,
         },
         IPORTDevice.send_command.__name__,
     )
