@@ -1,7 +1,9 @@
 # Home Assistant to Light Symphony iPort
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
-
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![maintained](https://img.shields.io/maintenance/yes/2026.svg)](#)
+[![maintainer](https://img.shields.io/badge/maintainer-%20%40petes--UK-blue.svg)](#)
+[![version](https://img.shields.io/github/v/release/peteS-UK/iport)](#)
 
 This custom component implements a device and switch entities for Home Assistant to allow for control of the Light Symphony iPort.  
 
