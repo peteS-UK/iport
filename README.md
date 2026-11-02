@@ -1,6 +1,6 @@
 # Home Assistant to Light Symphony iPort
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg)](https://github.com/hacs/integration)
 [![maintained](https://img.shields.io/maintenance/yes/2026.svg)](#)
 [![maintainer](https://img.shields.io/badge/maintainer-%20%40petes--UK-blue.svg)](#)
 [![version](https://img.shields.io/github/v/release/peteS-UK/iport)](#)
@@ -11,7 +11,9 @@ The iPort doesn't communicate any state information about the lights - i.e. if t
 
 ## Installation
 
-The preferred installation approach is via Home Assistant Community Store - aka [HACS](https://hacs.xyz/).  The repo is installable as a [Custom Repo](https://hacs.xyz/docs/faq/custom_repositories) via HACS.
+The preferred installation approach is via Home Assistant Community Store - aka [HACS](https://hacs.xyz/).  
+
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=peteS-UK&repository=iport&category=integration)
 
 If you want to download the integration manually, create a new folder called iport under your custom_components folder in your config folder.  If the custom_components folder doesn't exist, create it first.  Once created, download the files and folders from the [github repo](https://github.com/peteS-UK/iport/tree/main/custom_components/iport) into this new iport folder.
 
@@ -19,6 +21,9 @@ Once downloaded either via HACS or manually, restart your Home Assistant server.
 
 ## Configuration
 
-Configuration is done through the Home Assistant UI.  Once you're installed the integration, go into your Integrations (under Settings, Devices & Services), select Add Integration, and choose the Light Symphony iPort integration.
+Configuration is done through the Home Assistant UI.  Once you're installed the integration, go into your Integrations (under Settings, Devices & Services), select Add Integration, and choose the Light Symphony iPort integration, or click the shortcut button below (requires My Homeassistant configured).
+
+[![Add Integration to your Home Assistant
+instance.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=iport)
 
 This will display the configuration page, where you can select the IP address and name of the iPort.  You can also optionally name the areas, or leave them as their default values.
