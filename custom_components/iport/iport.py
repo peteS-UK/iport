@@ -96,7 +96,7 @@ class IPORT:
                 _command = f"colour_{port_number}_{value}\r\n"
             case "Start Show":
                 _command = "start_show\r\n"
-            case "All Off":
+            case "Stop Show":
                 _command = "stop_show\r\n"
             case _:
                 _command = None
